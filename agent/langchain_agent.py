@@ -32,7 +32,7 @@ Mood category:
 
 def get_wellness_tips(mood: str) -> str:
     """Fetch CBT-based wellness tips for the user's mood from the MCP server."""
-    API_URL = "https://your-mcp-server.onrender.com"
+    API_URL = "https://wellness-mcp-server.onrender.com"
     response = requests.get(f"{API_URL}/tips/{mood}")
     if response.status_code == 200:
         tips = response.json().get("tips", [])
