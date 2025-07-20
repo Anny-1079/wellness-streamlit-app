@@ -12,6 +12,8 @@ llm = ChatOpenAI(
     temperature=0.3
 )
 
+API_URL = "https://your-mcp-server.onrender.com"
+
 def classify_mood(user_input: str) -> str:
     """Use LLM to classify user input into a known mood category."""
     prompt = f"""
@@ -30,7 +32,7 @@ Mood category:
 
 def get_wellness_tips(mood: str) -> str:
     """Fetch CBT-based wellness tips for the user's mood from the MCP server."""
-    response = requests.get(f"http://localhost:8000/tips/{mood}")
+    response = requests.get(f"{API_URL}/tips/{mood}")
     if response.status_code == 200:
         tips = response.json().get("tips", [])
         if tips:
