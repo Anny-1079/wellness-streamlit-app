@@ -12,7 +12,7 @@ llm = ChatOpenAI(
     temperature=0.3
 )
 
-API_URL = "https://your-mcp-server.onrender.com"
+API_URL = "https://wellness-mcp-server.onrender.com"
 
 def classify_mood(user_input: str) -> str:
     """Use LLM to classify user input into a known mood category."""
