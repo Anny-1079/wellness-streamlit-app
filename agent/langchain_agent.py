@@ -31,17 +31,12 @@ Mood category:
     return response.content.strip().lower()
 
 def get_wellness_tips(mood: str) -> str:
-    """Fetch CBT-based wellness tips for the user's mood from the MCP server."""
-    
     response = requests.get(f"{API_URL}/tips/{mood}")
     if response.status_code == 200:
-        tips = response.json().get("tips", [])
-        if tips:
-            return "\n".join(tips)
-        else:
-            return f"No specific tips for {mood}, but remember to take care of yourself today."
+        data = response.json()
+        return "\n".join(data["tips"])
     else:
-        return "No tips available for this mood."
+        return "Error fetching wellness tips."
 
 def ai_wellness_coach(user_input: str) -> str:
     # Step 1. Classify mood
