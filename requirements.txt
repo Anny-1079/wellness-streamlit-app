@@ -1,10 +1,6 @@
-fastapi
-uvicorn
-<<<<<<< HEAD
+
 httpx
 groq
 langchain
 python-dotenv
 streamlit
-=======
->>>>>>> 0a886709f3f3c3d3dfae035950c724a6c1d54083
