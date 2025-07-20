@@ -7,7 +7,7 @@ import streamlit as st
 from agent.langchain_agent import ai_wellness_coach
 
 # 🔗 Define MCP server API URL
-API_URL = "https://your-mcp-server.onrender.com"
+API_URL = "https://wellness-mcp-server.onrender.com"
 
 st.title("🧠 AI Daily Wellness Coach (LangChain Agent)")
 st.write("Chat with your AI wellness coach. Share how you're feeling anytime.")
