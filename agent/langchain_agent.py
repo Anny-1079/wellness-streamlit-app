@@ -98,7 +98,7 @@ def get_wellness_tips(mood: str) -> str:
 
 
 def ai_wellness_coach(user_input: str) -> str:
-    mood = classify_mood(user_input)
+    mood = classify_mood(user_input).strip().lower()
     tips = get_wellness_tips(mood)
 
     prompt = f"""
