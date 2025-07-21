@@ -16,7 +16,7 @@ API_URL = "https://wellness-mcp-server.onrender.com"
 
 def classify_mood(user_input: str) -> str:
     """
-    Classify user input into ONLY ONE of the known mood categories using LLM.
+    Classify user input into one of the known mood categories using LLM.
     Maps synonyms to standard keys to ensure API compatibility.
     """
     prompt = f"""
@@ -24,7 +24,7 @@ You are a helpful wellness assistant.
 
 Classify the following user input into ONLY ONE of these mood categories:
 
-happy, sad, stressed, angry, anxious.
+happy, sad, stressed, angry, anxious, frustrated, confused.
 
 Return ONLY the category word in lowercase.
 
@@ -33,7 +33,8 @@ Input: "I feel amazing today!" -> happy
 Input: "I'm worried about my exam." -> anxious
 Input: "Workload is overwhelming me." -> stressed
 Input: "I can't believe he did that!" -> angry
-Input: "I'm feeling down today." -> sad
+Input: "I'm so confused about this topic." -> confused
+Input: "I'm frustrated with my slow progress." -> frustrated
 
 User input: "{user_input}"
 
@@ -42,22 +43,31 @@ Mood category:
     response = llm.invoke(prompt)
     mood = response.content.strip().lower()
 
-    # Map synonyms or slight variations to known keys
-    if mood in ["sadness"]:
-        mood = "sad"
-    elif mood in ["happiness", "joyful", "good", "excited", "content"]:
-        mood = "happy"
-    elif mood in ["anger", "mad", "frustrated"]:
-        mood = "angry"
-    elif mood in ["stress", "overwhelmed"]:
-        mood = "stressed"
-    elif mood in ["anxiety", "nervous", "worried"]:
-        mood = "anxious"
-    elif mood not in ["happy", "sad", "stressed", "angry", "anxious"]:
-        # Final fallback to "stressed" if unclassified
-        mood = "stressed"
+    # Map synonyms to known keys
+    synonyms = {
+        "sadness": "sad",
+        "joyful": "happy",
+        "good": "happy",
+        "excited": "happy",
+        "content": "happy",
+        "mad": "angry",
+        "frustrated": "frustrated",
+        "confusion": "confused",
+        "confused": "confused",
+        "overwhelmed": "stressed",
+        "stress": "stressed",
+        "anxiety": "anxious",
+        "nervous": "anxious",
+        "worried": "anxious"
+    }
+
+    mood = synonyms.get(mood, mood)
+
+    if mood not in ["happy", "sad", "stressed", "angry", "anxious", "frustrated", "confused"]:
+        mood = "neutral"  # default fallback
 
     return mood
+
 
 # def classify_mood(user_input: str) -> str:
 #     """Use LLM to classify user input into a known mood category."""
@@ -79,18 +89,17 @@ def get_wellness_tips(mood: str) -> str:
     response = requests.get(f"{API_URL}/tips/{mood}")
     if response.status_code == 200:
         data = response.json()
-        return "\n".join(data["tips"])
+        if data["tips"]:
+            return "\n".join(data["tips"])
+        else:
+            return "No tips available for this mood. Try another mood like happy, sad, stressed, angry, anxious."
     else:
         return "Error fetching wellness tips."
 
+
 def ai_wellness_coach(user_input: str) -> str:
-    # Step 1. Classify mood
     mood = classify_mood(user_input)
-    
-    # Step 2. Get tips from MCP server
     tips = get_wellness_tips(mood)
-    
-    # Step 3. Generate final compassionate response
 
     prompt = f"""
 You are a compassionate AI wellness coach.
@@ -101,8 +110,11 @@ They are feeling {mood}.
 Here are CBT-based wellness tips for them:
 {tips}
 
-Combine these tips into a motivating, structured guidance for the user in a conversational tone.
+Combine these tips into a SHORT motivating guidance for the user in a conversational tone, within 5 lines. Avoid long explanations.
 """
+    response = llm.invoke(prompt)
+    return response.content
+
 
     
 #     prompt = f"""
@@ -115,8 +127,8 @@ Combine these tips into a motivating, structured guidance for the user in a conv
 
 # Combine these tips into a motivating, structured guidance for the user in a conversational tone.
 # """
-    response = llm.invoke(prompt)
-    return response.content
+    # response = llm.invoke(prompt)
+    # return response.content
 
 if __name__ == "__main__":
     user_input = input("How are you feeling today? ")
