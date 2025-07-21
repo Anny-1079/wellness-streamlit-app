@@ -4,7 +4,8 @@ import requests
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import streamlit as st
-from agent.langchain_agent import ai_wellness_coach
+from agent.langchain_agent import ai_wellness_coach, classify_mood
+
 
 # 🔗 Define MCP server API URL
 API_URL = "https://wellness-mcp-server.onrender.com"
@@ -40,7 +41,8 @@ if user_input:
 
             # 🔗 Fetch tips from MCP server API
             try:
-                response = requests.get(f"{API_URL}/tips/{user_input.lower()}")
+                classified_mood = classify_mood(user_input)
+                response = requests.get(f"{API_URL}/tips/{classified_mood}")
                 if response.status_code == 200:
                     tips_data = response.json()
                     tips = "\n".join([f"- {tip}" for tip in tips_data["tips"]])
