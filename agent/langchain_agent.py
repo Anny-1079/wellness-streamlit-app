@@ -13,10 +13,12 @@ llm = ChatOpenAI(
 )
 
 API_URL = "https://wellness-mcp-server.onrender.com"
+
+
 def classify_mood(user_input: str) -> str:
     """
     Classify user input into one of the known mood categories using LLM.
-    Uses substring matching for robust standardization.
+    Maps synonyms to standard keys to ensure API compatibility.
     """
     prompt = f"""
 You are a helpful wellness assistant.
@@ -40,86 +42,32 @@ User input: "{user_input}"
 Mood category:
 """
     response = llm.invoke(prompt)
-    mood_raw = response.content.strip().lower()
+    mood = response.content.strip().lower()
 
-    # Debug print to see what LLM returns
-    print("LLM raw mood output:", mood_raw)
+    # Map synonyms to known keys
+    synonyms = {
+        "sadness": "sad",
+        "joyful": "happy",
+        "good": "happy",
+        "excited": "happy",
+        "content": "happy",
+        "mad": "angry",
+        "frustrated": "frustrated",
+        "confusion": "confused",
+        "confused": "confused",
+        "overwhelmed": "stressed",
+        "stress": "stressed",
+        "anxiety": "anxious",
+        "nervous": "anxious",
+        "worried": "anxious"
+    }
 
-    # Standardize using substring detection
-    if "happy" in mood_raw:
-        mood = "happy"
-    elif "sad" in mood_raw:
-        mood = "sad"
-    elif "stress" in mood_raw:
-        mood = "stressed"
-    elif "angry" in mood_raw or "anger" in mood_raw:
-        mood = "angry"
-    elif "anxious" in mood_raw or "anxiety" in mood_raw or "nervous" in mood_raw or "worried" in mood_raw:
-        mood = "anxious"
-    elif "frustrated" in mood_raw or "frustration" in mood_raw:
-        mood = "frustrated"
-    elif "confused" in mood_raw or "confusion" in mood_raw:
-        mood = "confused"
-    else:
+    mood = synonyms.get(mood, mood)
+
+    if mood not in ["happy", "sad", "stressed", "angry", "anxious", "frustrated", "confused"]:
         mood = "neutral"  # default fallback
 
     return mood
-
-
-
-# def classify_mood(user_input: str) -> str:
-#     """
-#     Classify user input into one of the known mood categories using LLM.
-#     Maps synonyms to standard keys to ensure API compatibility.
-#     """
-#     prompt = f"""
-# You are a helpful wellness assistant.
-
-# Classify the following user input into ONLY ONE of these mood categories:
-
-# happy, sad, stressed, angry, anxious, frustrated, confused.
-
-# Return ONLY the category word in lowercase.
-
-# Examples:
-# Input: "I feel amazing today!" -> happy
-# Input: "I'm worried about my exam." -> anxious
-# Input: "Workload is overwhelming me." -> stressed
-# Input: "I can't believe he did that!" -> angry
-# Input: "I'm so confused about this topic." -> confused
-# Input: "I'm frustrated with my slow progress." -> frustrated
-
-# User input: "{user_input}"
-
-# Mood category:
-# """
-#     response = llm.invoke(prompt)
-#     mood = response.content.strip().lower()
-
-#     # Map synonyms to known keys
-#     synonyms = {
-#         "sadness": "sad",
-#         "joyful": "happy",
-#         "good": "happy",
-#         "excited": "happy",
-#         "content": "happy",
-#         "mad": "angry",
-#         "frustrated": "frustrated",
-#         "confusion": "confused",
-#         "confused": "confused",
-#         "overwhelmed": "stressed",
-#         "stress": "stressed",
-#         "anxiety": "anxious",
-#         "nervous": "anxious",
-#         "worried": "anxious"
-#     }
-
-#     mood = synonyms.get(mood, mood)
-
-#     if mood not in ["happy", "sad", "stressed", "angry", "anxious", "frustrated", "confused"]:
-#         mood = "neutral"  # default fallback
-
-#     return mood
 
 
 # def classify_mood(user_input: str) -> str:
