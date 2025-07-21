@@ -16,7 +16,7 @@ API_URL = "https://wellness-mcp-server.onrender.com"
 
 def classify_mood(user_input: str) -> str:
     """
-    Classify user input into one of the known mood categories using LLM.
+    Classify user input into ONLY ONE of the known mood categories using LLM.
     Maps synonyms to standard keys to ensure API compatibility.
     """
     prompt = f"""
@@ -26,32 +26,38 @@ Classify the following user input into ONLY ONE of these mood categories:
 
 happy, sad, stressed, angry, anxious.
 
-If it is not clear, choose the closest category from the list above.
+Return ONLY the category word in lowercase.
+
+Examples:
+Input: "I feel amazing today!" -> happy
+Input: "I'm worried about my exam." -> anxious
+Input: "Workload is overwhelming me." -> stressed
+Input: "I can't believe he did that!" -> angry
+Input: "I'm feeling down today." -> sad
 
 User input: "{user_input}"
 
-Return ONLY the category word (happy, sad, stressed, angry, or anxious).
+Mood category:
 """
     response = llm.invoke(prompt)
     mood = response.content.strip().lower()
 
-    # Map synonyms or misclassifications to known keys
+    # Map synonyms or slight variations to known keys
     if mood in ["sadness"]:
         mood = "sad"
-    elif mood in ["happiness", "joyful", "good", "excited"]:
+    elif mood in ["happiness", "joyful", "good", "excited", "content"]:
         mood = "happy"
-    elif mood in ["anger", "angry", "mad", "frustrated"]:
+    elif mood in ["anger", "mad", "frustrated"]:
         mood = "angry"
-    elif mood in ["stress", "stressed", "overwhelmed"]:
+    elif mood in ["stress", "overwhelmed"]:
         mood = "stressed"
-    elif mood in ["anxiety", "anxious", "nervous", "worried"]:
+    elif mood in ["anxiety", "nervous", "worried"]:
         mood = "anxious"
-    else:
-        # Default fallback
+    elif mood not in ["happy", "sad", "stressed", "angry", "anxious"]:
+        # Final fallback to "stressed" if unclassified
         mood = "stressed"
 
     return mood
-
 
 # def classify_mood(user_input: str) -> str:
 #     """Use LLM to classify user input into a known mood category."""
