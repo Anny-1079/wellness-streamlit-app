@@ -70,22 +70,6 @@ Mood category:
     return mood
 
 
-# def classify_mood(user_input: str) -> str:
-#     """Use LLM to classify user input into a known mood category."""
-#     prompt = f"""
-# You are a helpful wellness assistant.
-
-# Classify the following user input into one of these mood categories: happy, sad, stressed, angry, anxious.
-
-# If none of these fit, return the closest category.
-
-# User input: "{user_input}"
-
-# Mood category:
-# """
-#     response = llm.invoke(prompt)
-#     return response.content.strip().lower()
-
 def get_wellness_tips(mood: str) -> str:
     response = requests.get(f"{API_URL}/tips/{mood}")
     if response.status_code == 200:
@@ -111,25 +95,19 @@ They are feeling {mood}.
 Here are CBT-based wellness tips for them:
 {tips}
 
-Combine these tips into a SHORT motivating guidance for the user in a conversational tone, within 5 lines. Avoid long explanations.
+Combine these tips into a motivating guidance for the user in a warm, conversational tone. 
+Make it clear and concise: 
+
+- Start with a short supportive line acknowledging their feeling.
+- Briefly explain each tip in one sentence, not just the headline, so they understand how to apply it.
+- End with a simple, encouraging closing line.
+
+Keep it informative but not over-explained. Aim for around 5-7 lines total.
 """
+
     response = llm.invoke(prompt)
     return response.content
 
-
-    
-#     prompt = f"""
-# You are a compassionate AI wellness coach.
-
-# The user is feeling {mood}.
-
-# Here are CBT-based wellness tips for them:
-# {tips}
-
-# Combine these tips into a motivating, structured guidance for the user in a conversational tone.
-# """
-    # response = llm.invoke(prompt)
-    # return response.content
 
 if __name__ == "__main__":
     user_input = input("How are you feeling today? ")
