@@ -9,7 +9,7 @@ llm = ChatOpenAI(
     api_key=os.getenv("GROQ_API_KEY"),
     base_url="https://api.groq.com/openai/v1",
     # model="llama3-70b-8192",
-    model="llama-3.1-70b-versatile", 
+    model="llama-3.3-70b-versatile", 
     temperature=0.3
 )
 
@@ -113,4 +113,5 @@ Keep it informative but not over-explained. Aim for around 5-7 lines total.
 if __name__ == "__main__":
     user_input = input("How are you feeling today? ")
     print(ai_wellness_coach(user_input))
+
 
